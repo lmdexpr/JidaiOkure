@@ -39,7 +39,7 @@ def auth
 end
 
 def get_data
-  if File.exist?(authed_file_path) then
+  if File.exist?(authed_file_path)
     JSON.parse File.read authed_file_path
   else
     auth
@@ -67,25 +67,23 @@ def conncect_twitter(data)
 end
 
 def update_name(rep_id, rep_sn, str)
-  unless str == nil
+  if str
     @client.update_profile(:name => str)
-    @client.update("@#{rep_sn} Updated to #{str.gsub(/@/, 'at_')}", :in_reply_to_status_id => rep_id)
+    @client.update("@#{rep_sn} #{str.gsub(/@/, 'at_')}に改名したよ", :in_reply_to_status_id => rep_id)
   end
 end
 
 def parse(str)
-  if str.match(/^@#{@screen_name} update_name\s/) != nil
-    str.sub(/^@#{@screen_name} update_name /, '')
-  else
-    nil
+  if str.match(/^@#{@screen_name} update_name\s/)
+    $'
+  elsif str.match(/\(@#{@screen_name}\)$/)
+    $`
   end
 end
 
 def streaming_start
   @stream.userstream(:replies => 'all') do |status|
-    if status.in_reply_to_screen_name == @screen_name
-      update_name status.id, status.user.screen_name, parse(status.text)
-    end
+    update_name status.id, status.user.screen_name, parse(status.text)
   end
 end
 
