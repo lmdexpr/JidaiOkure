@@ -1,4 +1,6 @@
 #!/bin/ruby
+# -*- coding: utf-8 -*-
+
 require 'rubygems'
 
 require 'twitter'
@@ -74,9 +76,9 @@ def update_name(rep_id, rep_sn, str)
 end
 
 def parse(str)
-  if str.match(/^@#{@screen_name} update_name\s/)
+  if str.match(/^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/)
     $'
-  elsif str.match(/\(@#{@screen_name}\)$/)
+  elsif str.match(/\([[:blank:]]*@#{@screen_name}[[:blank:]]*\)$/)
     $`
   end
 end
