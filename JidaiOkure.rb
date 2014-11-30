@@ -11,6 +11,8 @@ require 'oauth/consumer'
 
 require 'json'
 
+require 'optparse'
+
 def authed_file_path
   './.authed'
 end
@@ -22,10 +24,10 @@ end
 
 def auth
   data = {}
-  data[:con_key]    = input_with_message("Consumer key")
-  data[:con_secret] = input_with_message("Consumer Key secret")
+  data["con_key"]    = input_with_message("Consumer key")
+  data["con_secret"] = input_with_message("Consumer Key secret")
 
-  consumer = OAuth::Consumer.new(data[:con_key], data[:con_secret], site: 'https://api.twitter.com')
+  consumer = OAuth::Consumer.new(data["con_key"], data["con_secret"], site: 'https://api.twitter.com')
 
   request_token = consumer.get_request_token
   puts "Please access: #{request_token.authorize_url}"
@@ -33,15 +35,20 @@ def auth
   pin = input_with_message("PIN")
 
   access_token = request_token.get_access_token(oauth_verifier: pin)
-  data[:acc_token]  = access_token.token
-  data[:acc_secret] = access_token.secret
+  data["acc_token"]  = access_token.token
+  data["acc_secret"] = access_token.secret
 
   File.write authed_file_path, JSON.dump(data)
+  puts "done."
   data
 end
 
+def authed?
+  File.exist?(authed_file_path)
+end
+
 def get_data
-  if File.exist?(authed_file_path)
+  if authed?
     JSON.parse File.read authed_file_path
   else
     auth
@@ -89,6 +96,15 @@ def streaming_start
   end
 end
 
-Process.daemon(true, true)
-conncect_twitter get_data
-streaming_start
+def main(dflag = false)
+  if dflag then Process.daemon(true, true) end
+  conncect_twitter get_data
+  streaming_start
+end
+
+opt = OptionParser.new
+opt.on('-a', '--auth-only', 'running only auth and make .auth file'){|v| auth; exit}
+opt.on('-d', '--daemonize', 'daemonize(require .auth file)'){|v| $dflag = v}
+
+opt.parse!(ARGV)
+main $dflag
