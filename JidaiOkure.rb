@@ -97,8 +97,8 @@ def streaming_start
 end
 
 def main(dflag = false)
-  if dflag then Process.daemon(true, true) end
   conncect_twitter get_data
+  if dflag then Process.daemon(true, true) end
   streaming_start
 end
 
