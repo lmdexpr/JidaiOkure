@@ -23,9 +23,11 @@ def input_with_message(str)
 end
 
 def auth
-  data = {}
-  data["con_key"]    = input_with_message("Consumer key")
-  data["con_secret"] = input_with_message("Consumer Key secret")
+  data ={
+    "con_key"    => "rdbKRAFhKZQflJ4p6TEwOnGr3" ,
+    "con_secret" => "dSVf2Urw9sDsCMnPliCowddvDYFRQtNcQQdvW5vVX56h73u49T"
+  }
+  # どうなっても僕はしらない
 
   consumer = OAuth::Consumer.new(data["con_key"], data["con_secret"], site: 'https://api.twitter.com')
 
