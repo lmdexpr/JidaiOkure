@@ -86,7 +86,7 @@ end
 def parse(str)
   if str.match(/^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/)
     $'
-  elsif str.match(/[[:blank:]]+\([[:blank:]]*@#{@screen_name}[[:blank:]]*\)$/)
+  elsif str.match(/[[:blank:]]*\([[:blank:]]*@#{@screen_name}[[:blank:]]*\)$/)
     $`
   end
 end
