@@ -78,14 +78,15 @@ end
 def update_name(rep_id, rep_sn, str)
   if str
     @client.update_profile(:name => str)
-    @client.update("@#{rep_sn} #{str.gsub(/@/, 'at_')}に改名したよ", :in_reply_to_status_id => rep_id)
+    @client.update("@#{rep_sn} #{str.gsub(/@/, 'at_')}にあっぷでーとねーむっ！",
+                   :in_reply_to_status_id => rep_id)
   end
 end
 
 def parse(str)
   if str.match(/^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/)
     $'
-  elsif str.match(/\([[:blank:]]*@#{@screen_name}[[:blank:]]*\)$/)
+  elsif str.match(/[[:blank:]]\([[:blank:]]*@#{@screen_name}[[:blank:]]*\)$/)
     $`
   end
 end
