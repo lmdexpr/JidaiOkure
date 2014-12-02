@@ -88,14 +88,16 @@ end
 def parse(str)
   if str.match(/^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/)
     $'
-  elsif str.match(/[[:blank:]]*\([[:blank:]]*@#{@screen_name}[[:blank:]]*\)$/)
+  elsif str.match(/[[:blank:]]*[\(（][[:blank:]]*@#{@screen_name}[[:blank:]]*[\)）]$/)
     $`
   end
 end
 
 def streaming_start
   @stream.userstream(:replies => 'all') do |status|
-    update_name status.id, status.user.screen_name, parse(status.text)
+    if status.retweet_count == 0
+      update_name status.id, status.user.screen_name, parse(status.text)
+    end
   end
 end
 
