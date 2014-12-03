@@ -80,36 +80,42 @@ end
 def update_name(rep_id, rep_sn, str)
   if str
     @client.update_profile(:name => str)
-    @client.update("@#{rep_sn} #{str.gsub(/@/, 'at_')}にあっぷでーとねーむっ！",
+    @client.update("@#{rep_sn} #{str.slice(0, 20).gsub(/@/, 'at_')}にあっぷでーとねーむっ！",
                    :in_reply_to_status_id => rep_id)
   end
 end
 
 def parse(str)
-  if str.match(/^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/)
+  if str =~ /^RT\s*@\w+:/
+    nil
+  elsif str =~ /^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/
     $'
-  elsif str.match(/[[:blank:]]*[\(（][[:blank:]]*@#{@screen_name}[[:blank:]]*[\)）]$/)
+  elsif str =~ /[[:blank:]]*[\(（][[:blank:]]*@#{@screen_name}[[:blank:]]*[\)）]$/
     $`
   end
 end
 
 def streaming_start
   @stream.userstream(:replies => 'all') do |status|
-    if status.retweet_count == 0
-      update_name status.id, status.user.screen_name, parse(status.text)
+    update_name status.id, status.user.screen_name, parse(status.text)
+    if $is_debug_mode
+      puts status.text
+      p parse(status.text)
+      puts
     end
   end
 end
 
-def main(dflag = false)
+def main
   conncect_twitter get_data
-  if dflag then Process.daemon(true, true) end
+  if $is_daemonize && (not $is_debug_mode) then Process.daemon(true, true) end
   streaming_start
 end
 
 opt = OptionParser.new
-opt.on('-a', '--auth-only', 'running only auth and make .auth file'){|v| auth; exit}
-opt.on('-d', '--daemonize', 'daemonize(require .auth file)'){|v| $dflag = v}
+opt.on('-a', '--auth-only',  'running only auth and make .auth file'){|v| auth; exit}
+opt.on('-d', '--daemonize',  'daemonize(release mode only)'){|v| $is_daemonize = v}
+opt.on('-D', '--debug-mode', 'run in debug mode'){|v| $is_debug_mode = v}
 
 opt.parse!(ARGV)
-main $dflag
+main
