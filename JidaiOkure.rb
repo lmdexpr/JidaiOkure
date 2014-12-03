@@ -80,7 +80,7 @@ end
 def update_name(rep_id, rep_sn, str)
   if str
     @client.update_profile(:name => str)
-    @client.update("@#{rep_sn} #{str.slice(0, 20).gsub(/@/, 'at_')}にあっぷでーとねーむっ！",
+    @client.update("@#{rep_sn} 「#{str.slice(0, 20).gsub(/@/, 'at_')}」にあっぷでーとねーむっ！",
                    :in_reply_to_status_id => rep_id)
   end
 end
