@@ -82,13 +82,13 @@ def update_name(rep_id, rep_sn, str)
     @client.update_profile(:name => str)
     @client.update("@#{rep_sn} 「#{str.slice(0, 20).gsub(/@/, 'at_')}」にあっぷでーとねーむっ！",
                    :in_reply_to_status_id => rep_id)
-    itiban str
+    itiban str, "甘寧一番乗り"
   end
 end
 
-def itiban(str)
-  if str =~ /^甘寧一番乗り$/
-    @client.update_with_media "itiban nori!", File.open("./itiban.jpg")
+def itiban(str, uniq, fname = "./itiban.jpg")
+  if str =~ /^#{uniq}$/
+    @client.update_with_media "#{uniq}", File.open(fname)
   end
 end
 
