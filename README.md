@@ -18,8 +18,11 @@ gem install twitter tweetstream oauth
 
 ## Functions
 
+* authorization only option (-a, --auth-only)
+* daemonize
 * update name system
   * @screen-name update_name <name>
   * <name>(@screen-name)
+  * OK: separate by space, ZENAKKU space, newline
 * itiban-nori!
   * image post when update name unique word
