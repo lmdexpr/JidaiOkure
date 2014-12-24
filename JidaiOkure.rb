@@ -92,13 +92,15 @@ def itiban(str, uniq, fname = "./itiban.jpg")
   end
 end
 
+def target
+  /^[:blank:]*(@#{@screen_name}[[:blank:]\n]+update_name[[:blank:]\n]+(.+?)|(.+?)[[:blank:]\n]*[\(（][[:blank:]\n]*@#{@screen_name}[[:blank:]\n]*[\)）])[[:blank:]\n]*$/
+end
+
 def parse(str)
   if str =~ /^RT\s*@\w+:/
     nil
-  elsif str =~ /^@#{@screen_name}[[:blank:]]+update_name[[:blank:]]+/
-    $'
-  elsif str =~ /[[:blank:]]*[\(（][[:blank:]]*@#{@screen_name}[[:blank:]]*[\)）]$/
-    $`
+  elsif str =~ target
+    $2 || $3
   end
 end
 
@@ -113,16 +115,12 @@ def streaming_start
   end
 end
 
-def main
-  conncect_twitter get_data
-  if $is_daemonize && (not $is_debug_mode) then Process.daemon(true, true) end
-  streaming_start
-end
-
 opt = OptionParser.new
 opt.on('-a', '--auth-only',  'running only auth and make .auth file'){|v| auth; exit}
 opt.on('-d', '--daemonize',  'daemonize(release mode only)'){|v| $is_daemonize = v}
 opt.on('-D', '--debug-mode', 'run in debug mode'){|v| $is_debug_mode = v}
 
 opt.parse!(ARGV)
-main
+conncect_twitter get_data
+if $is_daemonize && (not $is_debug_mode) then Process.daemon(true, true) end
+streaming_start
