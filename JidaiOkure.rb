@@ -107,13 +107,17 @@ def parse(str)
   end
 end
 
+def debug_print
+  if $is_debug_mode
+    puts status.text
+    p parse(status.text)
+    puts
+  end
+end
+
 def streaming_start
   @stream.userstream(:replies => 'all') do |status|
-    if $is_debug_mode
-      puts status.text
-      p parse(status.text)
-      puts
-    end
+    debug_print
     update_name status.id, status.user.screen_name, parse(status.text)
   end
 end
