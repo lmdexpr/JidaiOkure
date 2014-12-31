@@ -82,7 +82,6 @@ def update_name(rep_id, rep_sn, str)
     @client.update_profile(:name => str)
     @client.update("@#{rep_sn} 「#{str.slice(0, 20).gsub(/@/, 'at_')}」にあっぷでーとねーむっ！",
                    :in_reply_to_status_id => rep_id)
-    itiban str, "甘寧一番乗り"
   end
 end
 
@@ -116,18 +115,26 @@ def debug_print
 end
 
 def streaming_start
+  if $is_debug_mode
+    Process.daemon true, true
+  end
+
   @stream.userstream(:replies => 'all') do |status|
     debug_print
-    update_name status.id, status.user.screen_name, parse(status.text)
+
+    str = parse status.text
+
+    update_name status.id, status.user.screen_name, str
+    itiban str, "甘寧一番乗り"
   end
 end
 
 opt = OptionParser.new
-opt.on('-a', '--auth-only',  'running only auth and make .auth file'){|v| auth; exit}
-opt.on('-d', '--daemonize',  'daemonize(release mode only)'){|v| $is_daemonize = v}
-opt.on('-D', '--debug-mode', 'run in debug mode'){|v| $is_debug_mode = v}
-
+opt.on('-a', '--auth-only', 'running only auth and make .auth file') {|v| auth; exit}
+opt.on('-d', '--daemonize', 'daemonize(release mode only)') {|v|
+  unless $is_debug_mode then $is_daemonize = v end}
+opt.on('-D', '--debug', 'run in debug mode') {|v| $is_debug_mode = v}
 opt.parse!(ARGV)
+
 conncect_twitter get_data
-if $is_daemonize && (not $is_debug_mode) then Process.daemon(true, true) end
 streaming_start
