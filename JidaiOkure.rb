@@ -105,7 +105,7 @@ class UpdateName < JidaiNoOkure
   class << self
     def target
       /^[[:blank:]]*
-        (@#{@@screen_name}[[:blank:]\n]+update_name[[:blank:]\n]+(.+?)|
+        (@#{@@screen_name}[[:blank:]\n]+update(_|[[:blank:]])name[[:blank:]\n]+(.+?)|
         (.+?)[[:blank:]\n]*[\(（][[:blank:]\n]*@#{@@screen_name}[[:blank:]\n]*[\)）])
       [[:blank:]\n]*$/x
     end
