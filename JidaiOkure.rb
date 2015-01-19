@@ -136,7 +136,8 @@ end
 class Kireru < JidaiNoOkure
   class << self
     def target
-      /^(#{@@my_name}|@?#{@@screen_name})が(何|なに)を(言|い)ったところで.+(という|っていう)(感|かん)じだ$/u
+      /^(#{@@my_name}|@?#{@@screen_name})が(何|なに)を(言|い)ったところで.+
+      (といった|という|っていう)(感|かん)じだ$/xu
     end
 
     def run(str, rep_id, rep_sn)
