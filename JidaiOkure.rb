@@ -136,7 +136,7 @@ end
 class Kireru < JidaiNoOkure
   class << self
     def target
-      /^(#{@@my_name}|@?#{@@screen_name})が(何|なに)を(言|い)ったところで.*
+      /^(#{@@my_name}|@?#{@@screen_name})が(何|なに)を(言|い)っ(たところで|ても).*
       (といった|という|っていう|って)(感|かん)じだ$/xu
     end
 
