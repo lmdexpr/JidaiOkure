@@ -23,7 +23,7 @@ gem install twitter tweetstream oauth
 * update name system.
   * @screen-name update_name <name>
   * <name>(@screen-name)
-  * OK: separate by space, ZENAKKU space, newline.
+  * OK: separate by space, ZENKAKU space, newline.
 * itiban-nori!
   * image post when update name unique word.
 * kireru
