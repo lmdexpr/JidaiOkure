@@ -92,7 +92,7 @@ class JidaiNoOkure
 
       @@stream = TweetStream::Client.new
       @@screen_name = @@client.user.screen_name
-      @@my_name = @@client.user.name
+      @@my_name = @@client.user.name.gsub(/@/, 'at_')
     end
 
     def stream
@@ -113,7 +113,7 @@ class UpdateName < JidaiNoOkure
     def run(str, rep_id, rep_sn)
       return unless (str = super str, self.target)
       @@client.update_profile(:name => str)
-      @@client.update("@#{rep_sn} 「#{str.slice(0, 20).gsub(/@/, 'at_')}」にあっぷでーとねーむっ！",
+      @@client.update("@#{rep_sn} 「#{str.slice!(0, 20).gsub!(/@/, 'at_')}」にあっぷでーとねーむっ！",
                       :in_reply_to_status_id => rep_id)
       @@my_name = str
     end
