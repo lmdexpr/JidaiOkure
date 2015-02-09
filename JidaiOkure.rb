@@ -113,9 +113,9 @@ class UpdateName < JidaiNoOkure
     def run(str, rep_id, rep_sn)
       return unless (str = super str, self.target)
       @@client.update_profile(:name => str)
-      @@client.update("@#{rep_sn} 「#{str.slice!(0, 20).gsub!(/@/, 'at_')}」にあっぷでーとねーむっ！",
+      @@my_name = str.slice(0, 20).gsub(/@/, 'at_')
+      @@client.update("@#{rep_sn} 「#{@@my_name}」にあっぷでーとねーむっ！",
                       :in_reply_to_status_id => rep_id)
-      @@my_name = str
     end
   end
 end
