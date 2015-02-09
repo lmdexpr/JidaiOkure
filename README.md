@@ -28,3 +28,7 @@ gem install twitter tweetstream oauth
   * image post when update name unique word.
 * kireru
   * When found your tweet for dis my name, I angry.
+* JikoSyoukai
+  * @screen-name whoare(u|you)?
+  * @screen-name 誰?
+  * reply my name.

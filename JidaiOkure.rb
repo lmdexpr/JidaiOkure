@@ -141,10 +141,25 @@ class Kireru < JidaiNoOkure
     end
 
     def run(str, rep_id, rep_sn)
-      debug_print self.target
       debug_print str = (super str, self.target)
       return unless str
       @@client.update("@#{rep_sn} キレそう",:in_reply_to_status_id => rep_id)
+    end
+  end
+end
+
+class JikoSyoukai < JidaiNoOkure
+  class << self
+    def target
+      /^[[:blank:]]*
+        @#{@@screen_name}[[:blank:]\n]+(誰|(w|W)ho[[:blank:]]*are[[:blank:]]*(u|you)|)(\?|？)
+      [[:blank:]\n]*$/x
+    end
+
+    def run(str, rep_id, rep_sn)
+      debug_print str = (super str, self.target)
+      return unless str
+      @@client.update("@#{rep_sn} 私は#{@@my_name}",:in_reply_to_status_id => rep_id)
     end
   end
 end
@@ -153,19 +168,7 @@ def debug_print(str)
   pp str if $is_debug_mode
 end
 
-def streaming_start
-  if $is_daemonize
-    Process.daemon true, true
-  end
-
-  JidaiNoOkure.stream.userstream(:replies => 'all') do |status|
-    tweet, id, sn = status.text, status.id, status.user.screen_name
-    debug_print tweet
-    UpdateName.run tweet, id, sn
-    Itiban.run tweet
-    Kireru.run tweet, id, sn
-  end
-end
+# main
 
 opt = OptionParser.new
 opt.on('-a', '--auth-only', 'running only auth and make .auth file') {|v| auth; exit}
@@ -174,4 +177,16 @@ opt.on('-d', '--daemonize', 'daemonize(release mode only)') {|v| $is_daemonize =
 opt.parse!(ARGV)
 
 JidaiNoOkure.conncect_twitter get_data
-streaming_start
+
+if $is_daemonize
+  Process.daemon true, true
+end
+
+JidaiNoOkure.stream.userstream(:replies => 'all') do |status|
+  tweet, id, sn = status.text, status.id, status.user.screen_name
+  debug_print tweet
+  UpdateName.run tweet, id, sn
+  Itiban.run tweet
+  Kireru.run tweet, id, sn
+  JikoSyoukai.run tweet, id, sn
+end
