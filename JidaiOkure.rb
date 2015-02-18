@@ -62,7 +62,6 @@ end
 class JidaiNoOkure
   class << self
     def run(str, target)
-      debug_print "run super"
       self.parse str, target
     end
 
@@ -111,7 +110,9 @@ class UpdateName < JidaiNoOkure
     end
 
     def run(str, rep_id, rep_sn)
-      return unless (str = super str, self.target)
+      debug_print "UpdateName"
+      debug_print str = (super str, self.target)
+      return unless str
       @@client.update_profile(:name => str)
       @@my_name = str.slice(0, 20).gsub(/@/, 'at_')
       @@client.update("@#{rep_sn} 「#{@@my_name}」にあっぷでーとねーむっ！",
@@ -127,7 +128,9 @@ class Itiban < JidaiNoOkure
     end
 
     def run(str, fname = "./itiban.jpg")
-      return unless (str = super str, self.target) == "甘寧一番乗り"
+      debug_print "Itiban"
+      debug_print str = (super str, self.target)
+      return unless str == "甘寧一番乗り"
       @@client.update_with_media "#{str}", File.open(fname)
     end
   end
@@ -141,6 +144,7 @@ class Kireru < JidaiNoOkure
     end
 
     def run(str, rep_id, rep_sn)
+      debug_print "Kireru"
       debug_print str = (super str, self.target)
       return unless str
       @@client.update("@#{rep_sn} キレそう",:in_reply_to_status_id => rep_id)
@@ -152,11 +156,12 @@ class JikoSyoukai < JidaiNoOkure
   class << self
     def target
       /^[[:blank:]]*
-        @#{@@screen_name}[[:blank:]\n]+(誰|(w|W)ho[[:blank:]]*are[[:blank:]]*(u|you)|)(\?|？)
+        @#{@@screen_name}[[:blank:]\n]+((誰|だれ)|(w|W)ho[[:blank:]]*are[[:blank:]]*(u|you))(\?|？)
       [[:blank:]\n]*$/x
     end
 
     def run(str, rep_id, rep_sn)
+      debug_print "JikoSyoukai"
       debug_print str = (super str, self.target)
       return unless str
       @@client.update("@#{rep_sn} 私は#{@@my_name}",:in_reply_to_status_id => rep_id)
@@ -172,7 +177,7 @@ end
 
 opt = OptionParser.new
 opt.on('-a', '--auth-only', 'running only auth and make .auth file') {|v| auth; exit}
-opt.on('-D', '--debug', 'run in debug mode') {|v| $is_debug_mode = v}
+opt.on('-D', '--debug',     'run in debug mode') {|v| $is_debug_mode = v}
 opt.on('-d', '--daemonize', 'daemonize(release mode only)') {|v| $is_daemonize = v && (not $is_debug_mode)}
 opt.parse!(ARGV)
 
@@ -183,10 +188,10 @@ if $is_daemonize
 end
 
 JidaiNoOkure.stream.userstream(:replies => 'all') do |status|
-  tweet, id, sn = status.text, status.id, status.user.screen_name
-  debug_print tweet
-  UpdateName.run tweet, id, sn
-  Itiban.run tweet
-  Kireru.run tweet, id, sn
-  JikoSyoukai.run tweet, id, sn
+  tw, id, sn = status.text, status.id, status.user.screen_name
+  debug_print tw
+  UpdateName.run tw, id, sn
+  Itiban.run tw
+  Kireru.run tw, id, sn
+  JikoSyoukai.run tw, id, sn
 end
