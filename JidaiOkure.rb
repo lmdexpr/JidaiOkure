@@ -62,6 +62,7 @@ end
 class JidaiNoOkure
   class << self
     def run(str, target)
+      debug_print "super origin: #{str}"
       self.parse str, target
     end
 
@@ -110,8 +111,9 @@ class UpdateName < JidaiNoOkure
     end
 
     def run(str, rep_id, rep_sn)
-      debug_print "UpdateName"
-      debug_print str = (super str, self.target)
+      debug_print "UpdateName origin: #{str}"
+      str = super str, self.target
+      debug_print "UpdateName parsed: #{str}"
       return unless str
       @@client.update_profile(:name => str)
       @@my_name = str.slice(0, 20).gsub(/@/, 'at_')
@@ -128,8 +130,9 @@ class Itiban < JidaiNoOkure
     end
 
     def run(str, fname = "./itiban.jpg")
-      debug_print "Itiban"
-      debug_print str = (super str, self.target)
+      debug_print "Itiban origin: #{str}"
+      str = super str, self.target
+      debug_print "Itiban parsed: #{str}"
       return unless str == "甘寧一番乗り"
       @@client.update_with_media "#{str}", File.open(fname)
     end
@@ -144,8 +147,9 @@ class Kireru < JidaiNoOkure
     end
 
     def run(str, rep_id, rep_sn)
-      debug_print "Kireru"
-      debug_print str = (super str, self.target)
+      debug_print "Kireru origin: #{str}"
+      str = super str, self.target
+      debug_print "Kireru parsed: #{str}"
       return unless str
       @@client.update("@#{rep_sn} キレそう",:in_reply_to_status_id => rep_id)
     end
@@ -161,8 +165,9 @@ class JikoSyoukai < JidaiNoOkure
     end
 
     def run(str, rep_id, rep_sn)
-      debug_print "JikoSyoukai"
-      debug_print str = (super str, self.target)
+      debug_print "JikoSyoukai origin: #{str}"
+      str = super str, self.target
+      debug_print "JikoSyoukai parsed: #{str}"
       return unless str
       @@client.update("@#{rep_sn} 私は#{@@my_name}",:in_reply_to_status_id => rep_id)
     end
@@ -170,7 +175,10 @@ class JikoSyoukai < JidaiNoOkure
 end
 
 def debug_print(str)
-  pp str if $is_debug_mode
+  if $is_debug_mode
+    puts str
+    puts
+  end
 end
 
 # main
@@ -181,17 +189,23 @@ opt.on('-D', '--debug',     'run in debug mode') {|v| $is_debug_mode = v}
 opt.on('-d', '--daemonize', 'daemonize(release mode only)') {|v| $is_daemonize = v && (not $is_debug_mode)}
 opt.parse!(ARGV)
 
+debug_print "connecting ..."
 JidaiNoOkure.conncect_twitter get_data
+debug_print "connected"
 
 if $is_daemonize
   Process.daemon true, true
 end
 
+debug_print "streaming start"
+
 JidaiNoOkure.stream.userstream(:replies => 'all') do |status|
   tw, id, sn = status.text, status.id, status.user.screen_name
-  debug_print tw
-  UpdateName.run tw, id, sn
-  Itiban.run tw
-  Kireru.run tw, id, sn
-  JikoSyoukai.run tw, id, sn
+  debug_print "tweet: #{tw}"
+  [
+    Thread.new {UpdateName.run  tw, id, sn},
+    Thread.new {Kireru.run      tw, id, sn},
+    Thread.new {JikoSyoukai.run tw, id, sn},
+    Thread.new {Itiban.run      tw}
+  ].each {|t| t.join}
 end
