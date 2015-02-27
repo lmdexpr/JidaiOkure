@@ -1,5 +1,4 @@
 #!/bin/ruby
-# -*- coding: utf-8 -*-
 
 require 'rubygems'
 
@@ -98,6 +97,10 @@ class JidaiNoOkure
     def stream
       @@stream
     end
+
+    def log_file
+      "log.txt"
+    end
   end
 end
 
@@ -179,9 +182,13 @@ def debug_print(str)
     puts str
     puts
   end
+
+  File.write JidaiNoOkure.log_file, (File.read JidaiNoOkure.log_file) + str + "\n"
 end
 
 # main
+
+File.write JidaiNoOkure.log_file, ""
 
 opt = OptionParser.new
 opt.on('-a', '--auth-only', 'running only auth and make .auth file') {|v| auth; exit}
@@ -202,6 +209,8 @@ debug_print "streaming start"
 JidaiNoOkure.stream.userstream(:replies => 'all') do |status|
   tw, id, sn = status.text, status.id, status.user.screen_name
   debug_print "tweet: #{tw}"
+  debug_print "id: #{id}"
+  debug_print "sn: #{sn}"
   [
     Thread.new {UpdateName.run  tw, id, sn},
     Thread.new {Kireru.run      tw, id, sn},
