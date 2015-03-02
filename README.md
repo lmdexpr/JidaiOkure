@@ -5,18 +5,9 @@ JidaiOkure
 
 今時twitterAPIなんて流行らないよ
 
-## Dependency
+## Requirements
 
-* twitter
-* tweetstream
-* oauth
-
-## How to Running
-
-``` bash
-gem install twitter tweetstream oauth
-./JidaiOkure.rb
-```
+## Installation
 
 ## Functions
 
