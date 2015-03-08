@@ -6,8 +6,15 @@ JidaiOkure
 今時twitterAPIなんて流行らないよ
 
 ## Requirements
+* scala (version 2.11.1)
+* sbt (version 0.13.7)
+  * twitter4j
+  * scopt
+  * scalaz
 
 ## Installation
+```shell
+```
 
 ## Functions
 
