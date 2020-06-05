@@ -1,8 +1,6 @@
 JidaiOkure
 ==========
 
-[![Join the chat at https://gitter.im/lmdexpr/JidaiOkure](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/lmdexpr/JidaiOkure?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 今時twitterAPIなんて流行らないよ
 
 ## Dependency
